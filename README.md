@@ -28,16 +28,16 @@ be very powerfull when used in conjunction with Excel.
 
 - worksheets of interest
 
-  - 2003 - Clearing
   - 2002-LineSweep
+  - 2003 - Clearing
   - 2100-Pipeline DETAILS RoC
 
 ## Scripts
 
 We will be making a seperate function for parsing each worksheet as they are
-all in different formats and to keep our files a reasonable length
+all in different formats and to keep our script files a reasonable length
 
-The desired output is below. The crew progress has been normalized, columns 
+The desired output is below. The crew progress has been normalized, columns
 given sensible names, and all extraneous columns removed
 
 | KP_beg  | KP_end  | crew_code_1 | crew_code_2 | ... |
@@ -45,7 +45,7 @@ given sensible names, and all extraneous columns removed
 | 1050000 | 1050050 | 1           | 0           | ... |
 | 1050050 | 1050100 | 1           | 1           | ... |
 | 1050100 | 1050150 | 1           | 0.6         | ... |
-| 1050150 | 1050200 | 0           | 0           | ... |
+| 1050150 | 1050200 | null        | null        | ... |
 | ...     | ...     | ...         | ...         | ... |
 
 `latest_file.py`

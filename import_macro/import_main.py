@@ -19,30 +19,43 @@ def import_main(file: pd.ExcelFile):
       0: Progress has not been claimed
       1: Progress has been claimed
     """
+
+    # this particular sheet is much more complicated than the others
+    # there are many crews in this sheet
+    # each crew has an arbitraty number of columns associated with it
+    # there is a bunch of useless rows between the data and the header row
+
+    # parse file using pandas
+    # pandas has excellent docs
+    # refer to the below for all possible arguments
+    # https://pandas.pydata.org/docs/reference/api/pandas.read_excel.html
     data = file.parse(
         sheet_name="2100-Pipeline DETAILS RoC",
         usecols="N:O,Q:BY",
     )
 
+    # print("original main")
+    # print(data)  # move this print statement up and down to see what each stage does
+
+    # create dictionary to use in renaming dataframe method
     col_rename = {
         data.columns[0]: "KP_beg",
         data.columns[1]: "KP_end",
     }
 
     data = (
-        data.rename(col_rename, axis=1)
-        .drop(range(30))
-        .reset_index(drop=True)
-        .dropna(subset=["KP_beg", "KP_end"])
+        data.rename(col_rename, axis=1)  # rename KP_beg and KP_end columns
+        .drop(range(30))  # drop the first 30 rows
+        .dropna(subset=["KP_beg", "KP_end"])  # remove rows with not KP_beg or KP-end
     )
 
-    data = data[
-        pd.to_numeric(data["KP_beg"], errors="coerce").notnull()
-    ]  # remove non-numeric KPs
-    data = data.drop(
-        [i for i in data.columns if "Unnamed" in i], axis=1
-    )  # remove unnamed columns
+    # remove non-numeric KPs
+    data = data[pd.to_numeric(data["KP_beg"], errors="coerce").notnull()]
 
+    # remove columns with unnamed
+    data = data.drop([i for i in data.columns if "Unnamed" in i], axis=1)
+
+    # if scope is 0 null else percentage complete
     def get_status(r: pd.Series, scope: str, complete: str):
         if r[scope] == 0:
             return None
@@ -50,17 +63,17 @@ def import_main(file: pd.ExcelFile):
 
     result = data[["KP_beg", "KP_end"]].copy()
     for index, col in enumerate(data.columns):
-        if "% Comp" in col:
-            prev_col = data.columns[index - 1]
-            crew_num = re.search(r"[0-9]{4}", prev_col)
-            if not crew_num:
-                continue
+        if "% Comp" not in col:
+            continue
 
-            crew_num = float(crew_num.group(0))
-            temp = data[[prev_col, col]].copy()
-            result[crew_num] = temp.apply(
-                lambda r: get_status(r, prev_col, col), axis=1
-            )
+        prev_col = data.columns[index - 1]
+        crew_num = re.search(r"[0-9]{4}", prev_col)  # use regex to find crew cost code
+        if not crew_num:
+            continue
+
+        crew_num = float(crew_num.group(0))
+        temp = data[[prev_col, col]].copy()
+        result[crew_num] = temp.apply(lambda r: get_status(r, prev_col, col), axis=1)
 
     print("Macro main imported")
     return result.set_index(["KP_beg", "KP_end"])
@@ -72,7 +85,7 @@ def import_main(file: pd.ExcelFile):
 if __name__ == "__main__":
     fname = "raw/Master Progress Report_2023 05 05_MacroNK - Copy.xlsx"
     file = pd.ExcelFile(fname)
-    
+
     result = import_main(file)
     result.to_csv("test.csv")
     print(result)

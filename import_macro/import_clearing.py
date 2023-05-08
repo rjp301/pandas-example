@@ -28,8 +28,8 @@ def import_clearing(file: pd.ExcelFile):
     # data is of the form KP_beg,KP_end,scope,crews...
     # where crews with a date assigned have completed their scope in that KP range
     # if scope is 0 there is no work to be done in that area
-    print("original clearing")
-    print(data)
+    # print("original clearing")
+    # print(data)
 
     crews = [2003.1, 2003.2, 2003.3, 2003.4, 2003.5]  # custom crew names
 

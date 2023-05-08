@@ -30,8 +30,8 @@ def import_sweep(file: pd.ExcelFile):
     # cells that are blank are considered incomplete
     # there are some rows with the letter x in them that need to be cleaned
     # the columns will also be renamed
-    print("original sweep")
-    print(data)
+    # print("original sweep")
+    # print(data)
 
     # rename columns
     columns = ["KP_beg", "KP_end", 2002.1, 2002.2]

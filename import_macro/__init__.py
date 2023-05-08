@@ -4,6 +4,7 @@ from .import_clearing import import_clearing
 from .import_sweep import import_sweep
 
 from latest_file import latest_file  # our script for getting latest file by filename
+from sterilize_KP import sterilize_KP
 
 import os
 import pandas as pd  # import pandas library with alias of pd for breviety
@@ -31,6 +32,7 @@ def import_macro():
 
     # concatentate dataframes
     data = pd.concat(dfs).sort_index()
+    data = sterilize_KP(data)
     print(data)
     
     # save result to CSV file
