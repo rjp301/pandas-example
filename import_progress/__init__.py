@@ -10,7 +10,7 @@ import os
 import pandas as pd  # import pandas library with alias of pd for breviety
 
 
-def import_macro():
+def import_progress():
     fname, date = latest_file(
         path="raw",
         date_format="%Y %m %d",

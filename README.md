@@ -1,68 +1,44 @@
-# Pandas Examples
+# Pandas Excel Cleaning Example
 
-Example module to parse over-complicated and poorly formatted progress tracking
-spreadsheet into a clean CSV. Meant to be used as a showcase of how Pandas can
-be very powerfull when used in conjunction with Excel.
+Example module to parse over-complicated and poorly formatted progress tracking spreadsheet into a clean CSV. Meant to be used as a showcase of how Python can be very powerful when used in conjunction with Excel.
 
-## Input Info
+## Premise
 
-### /raw
+Quantity progress tracking is captured in a large and convoluted workbook with several different formats and different crews on different pages. This workbook is not very intuitive for anyone but its creator to look at and is very difficult to use for data analysis. Additionally, the Excel file is quite heavy and consumes resources while open. We will convert this workbook into a homogenous, normalized, lightweight CSV file.
 
-- folder containing weekly progress report distribution
-- each file has a some-what consistent naming scheme but not enough to be sorted by name
-- internal pattern of "_...Report_YYYY MM DD_Macro..._" can be used to extract the date
+For the most part, the original data consists of tables plotting construction status against KP ranges on the Y-axis and crew types on the X-axis. We will follow that format but clean it up by using integer cost codes as the column names and keep the KP range as the index.
 
-### /raw/[file].xlsx
+## File Management
 
-- progress quantity tracking spreadsheet
-- has several worksheets of interest showing status of KP chunks
-- vaguely in the below format but with a substantial amount of extraneous information
+As this progress report is distributed weekly, we will always want to use the latest version of the workbook. We can create a directory to drop the files in every week called `/raw`.
 
-| KP Start | KP End   | Crew #1 | Crew #2 | ... |
-| -------- | -------- | ------- | ------- | --- |
-| 1050+000 | 1050+050 | 50m     | 0m      | ... |
-| 1050+050 | 1050+100 | 50m     | 50m     | ... |
-| 1050+100 | 1050+150 | 50m     | 30m     | ... |
-| 1050+150 | 1050+200 | 0m      | 0m      | ... |
-| ...      | ...      | ...     | ...     | ... |
+We will write a function called `latest_file` to find the most recent distribution in the folder based on common patterns in the filename. As you can see by looking in the `/raw` folder, the file naming scheme is not overly strict. It's alright though, because each filename has an internal pattern of "_...Report_YYYY MM DD_Macro..._" which can be used to extract the date.
 
-- worksheets of interest
+## Progress File
 
-  - 2002-LineSweep
-  - 2003 - Clearing
-  - 2100-Pipeline DETAILS RoC
+The progress quantity tracking spreadsheet has several worksheets of interest showing status of KP chunks. They are in the format of KP chunk vs. crew type but have way too much extraneous information.
 
-## Scripts
+The worksheets of interest are as below and we will make a separate function for each.
 
-We will be making a seperate function for parsing each worksheet as they are
-all in different formats and to keep our script files a reasonable length
+- 2002-LineSweep
+- 2003 - Clearing
+- 2100-Pipeline DETAILS RoC
 
-The desired output is below. The crew progress has been normalized, columns
-given sensible names, and all extraneous columns removed
+## Code
 
-| KP_beg  | KP_end  | crew_code_1 | crew_code_2 | ... |
-| ------- | ------- | ----------- | ----------- | --- |
-| 1050000 | 1050050 | 1           | 0           | ... |
-| 1050050 | 1050100 | 1           | 1           | ... |
-| 1050100 | 1050150 | 1           | 0.6         | ... |
-| 1050150 | 1050200 | null        | null        | ... |
-| ...     | ...     | ...         | ...         | ... |
+Have a look through the code in this order:
 
-`latest_file.py`
-function to analyze all files in a directory with dates in their titles and return the latest
+1. `latest_file.py`
+1. `main.py`
+1. `import_progress/__init__.py`
+1. `import_progress/import_sweep.py`
+1. `import_progress/import_clearing.py`
+1. `import_progress/import_main.py`
+1. `sterilize_KP.py`
 
-`import_clearing.py`
-function to extract clearing information in desired format
+## Output
 
-`import_sweep.py`
-function to extract sweep information in desired format
-
-`import_main.py`
-function to extract other crews information in desired format
-
-`__init__.py`
-function to execute the three import functions on the latest file and combine the results into
-one dataframe and save to CSV
+The cleaned and combined CSV file is saved to `parsed.csv`.
 
 ## How to Run
 
